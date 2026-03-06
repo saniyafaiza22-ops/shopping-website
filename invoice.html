@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Invoice - Lilac & Loom</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      background: #faf7f5;
+      font-family: 'Poppins', sans-serif;
+    }
+    .invoice-wrapper {
+      max-width: 850px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+      padding: 40px 50px;
+    }
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .invoice-header h2 {
+      color: #3b0764;
+    }
+    .invoice-details {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+    .invoice-details div {
+      margin: 5px 0;
+    }
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    .invoice-table th, .invoice-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    .invoice-table th {
+      background: #fafafa;
+      font-weight: 600;
+    }
+    .invoice-table img {
+      width: 60px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .invoice-total {
+      text-align: right;
+      font-size: 1.1rem;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    .invoice-actions {
+      margin-top: 25px;
+      text-align: center;
+    }
+    .invoice-actions button {
+      background: #7c3aed;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      margin: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .invoice-actions button:hover {
+      background: #6d28d9;
+    }
+    .back-btn {
+      background: #f3f4f6;
+      color: #333;
+    }
+    .back-btn:hover {
+      background: #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-wrapper">
+    <div class="invoice-header">
+      <h2>Lilac & Loom</h2>
+      <div>
+        <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+        <p><strong>Date:</strong> <span id="orderDate"></span></p>
+      </div>
+    </div>
+
+    <div class="invoice-details">
+      <div>
+        <h4>Billing To:</h4>
+        <p id="custNameDisplay"></p>
+        <p id="custAddressDisplay"></p>
+      </div>
+    </div>
+
+    <h4 style="margin-top:15px;">Items Ordered</h4>
+    <table class="invoice-table" id="invoiceTable">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Price</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="invoice-total">
+      Total: ₹<span id="invoiceTotal"></span>
+    </div>
+
+    <div class="invoice-actions">
+      <button onclick="window.print()"><i class="fa-solid fa-print"></i> Print Invoice</button>
+      <button onclick="window.location.href='index.html'" class="back-btn">Back to Home</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const data = JSON.parse(localStorage.getItem('invoiceData'));
+      const tbody = document.querySelector('#invoiceTable tbody');
+      if (!data) {
+        document.body.innerHTML = "<p style='text-align:center;margin-top:50px;'>No recent order found.</p>";
+        return;
+      }
+
+      document.getElementById('orderId').innerText = data.id;
+      document.getElementById('orderDate').innerText = new Date(data.date).toLocaleString();
+      document.getElementById('custNameDisplay').innerText = data.name;
+      document.getElementById('custAddressDisplay').innerText = data.address;
+
+      let total = 0;
+      tbody.innerHTML = '';
+      data.items.forEach(item => {
+        const sub = item.price * item.qty;
+        total += sub;
+        tbody.innerHTML += `
+          <tr>
+            <td><img src="${item.img}" alt="${item.name}"> ${item.name}</td>
+            <td>${item.qty}</td>
+            <td>₹${item.price}</td>
+            <td>₹${sub}</td>
+          </tr>`;
+      });
+      document.getElementById('invoiceTotal').innerText = total;
+    });
+  </script>
+</body>
+</html>

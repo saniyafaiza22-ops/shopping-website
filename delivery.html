@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Order Status - Lilac & Loom</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <header class="main-navbar">
+    <div class="logo">Lilac & Loom</div>
+    <nav class="nav-menu"><a href="index.html">Home</a></nav>
+  </header>
+
+ <main class="delivery-container" id="deliveryContainer">
+  <h2 id="deliveryTitle">Your Order</h2>
+
+  <!-- 🧾 Order Info -->
+  <div class="order-info">
+    <p><strong>Order ID:</strong> <span id="deliveryOrderId">Loading...</span></p>
+    <p><strong>Date:</strong> <span id="deliveryOrderDate">Loading...</span></p>
+  </div>
+
+  <!-- 🚚 Progress Tracker -->
+  <div class="progressbar" id="progressbar" role="progressbar" aria-valuemin="0" aria-valuemax="4">
+    <div class="progress-step" id="step1"><i class="fa-solid fa-check"></i><div class="progress-label">Placed</div></div>
+    <div class="progress-step" id="step2"><i class="fa-solid fa-box"></i><div class="progress-label">Packed</div></div>
+    <div class="progress-step" id="step3"><i class="fa-solid fa-truck"></i><div class="progress-label">Shipped</div></div>
+    <div class="progress-step" id="step4"><i class="fa-solid fa-location-dot"></i><div class="progress-label">Out for Delivery</div></div>
+    <div class="progress-step" id="step5"><i class="fa-solid fa-star"></i><div class="progress-label">Delivered</div></div>
+  </div>
+
+  <p class="status-msg" id="statusMsg">Loading order status...</p>
+
+  <div id="orderDetails" class="order-details"></div>
+
+  <button class="back-btn" onclick="window.location.href='index.html'">Back to Home</button>
+</main>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', initDeliveryPage);
+    // ====== Delivery Page Animation ======
+function initDeliveryPage() {
+  const steps = ["step1", "step2", "step3", "step4", "step5"];
+  const statusMsg = document.getElementById("statusMsg");
+
+  let currentStep = 0;
+  function nextStep() {
+    if (currentStep < steps.length) {
+      const step = document.getElementById(steps[currentStep]);
+      if (step) step.classList.add("active");
+      statusMsg.innerText = ["Order Placed","Packed","Shipped","Out for Delivery","Delivered"][currentStep];
+      currentStep++;
+      setTimeout(nextStep, 1500);
+    }
+  }
+  nextStep();
+}
+
+  </script>
+  <script src="script.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const data = JSON.parse(localStorage.getItem('invoiceData'));
+    const idEl = document.getElementById('deliveryOrderId');
+    const dateEl = document.getElementById('deliveryOrderDate');
+
+    if (data) {
+      idEl.innerText = data.id;
+      dateEl.innerText = new Date(data.date).toLocaleString();
+    } else {
+      idEl.innerText = 'Not Found';
+      dateEl.innerText = '-';
+    }
+
+    // Start the animated tracking
+    initDeliveryPage();
+  });
+</script>
+
+</body>
+</html>

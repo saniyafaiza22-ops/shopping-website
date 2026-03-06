@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lilac & Loom </title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Script -->
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <!-- === NAVBAR === -->
+  <header class="main-navbar" role="banner">
+    <div class="logo" onclick="goHome()">Lilac & Loom</div>
+
+    <nav class="nav-menu" aria-label="Primary">
+      <a href="#" onclick="applyFilter('all', event)">All</a>
+      <a href="#" onclick="applyFilter('men', event)">Men</a>
+      <a href="#" onclick="applyFilter('women', event)">Women</a>
+      <a href="#" onclick="applyFilter('kids', event)">Kids</a>
+      <a href="#" onclick="applyFilter('footwear', event)">Footwear</a>
+      <a href="#" onclick="applyFilter('accessories', event)">Accessories</a>
+      <a href="#" onclick="applyFilter('cosmetics', event)">Cosmetics</a>
+      <a href="#" onclick="applyFilter('skincare', event)">Skincare</a>
+    </nav>
+
+    <div class="nav-actions">
+      <div class="search-box" role="search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="search" placeholder="Search for products, brands and more" oninput="renderProducts()">
+      </div>
+
+      <button class="home-btn" onclick="goHome()" aria-label="Go to home">
+        <i class="fa-solid fa-house"></i>
+      </button>
+
+      <button class="bag-btn" onclick="openCart()" aria-label="Open cart">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span id="cart-count" class="cart-badge">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- === HERO VIDEO SLIDER === -->
+  <section class="hero-video-slider">
+    <div class="video-slide active">
+      <video src="videos/istockphoto-1478657527-640_adpp_is.mp4" muted playsinline preload="auto"></video>
+      <div class="hero-overlay">
+        <h1>Timeless Fashion, Elegant You</h1>
+        <p>Discover exclusive looks crafted for your unique style</p>
+        <button onclick="document.querySelector('#product-grid').scrollIntoView({behavior:'smooth'})">Shop Now</button>
+      </div>
+    </div>
+
+    <div class="video-slide">
+      <video src="videos/istockphoto-1612357259-640_adpp_is.mp4" muted playsinline preload="auto"></video>
+      <div class="hero-overlay">
+        <h1>Step Into Style</h1>
+        <p>Trendy footwear and accessories just for you</p>
+        <button onclick="applyFilter('footwear', event)">Explore Footwear</button>
+      </div>
+    </div>
+
+    <div class="video-slide">
+      <video src="videos/istockphoto-1923527010-640_adpp_is.mp4" muted playsinline preload="auto"></video>
+      <div class="hero-overlay">
+        <h1>Festive Glamour</h1>
+        <p>Celebrate every moment with our latest ethnic collection</p>
+        <button onclick="applyFilter('women', event)">Shop Ethnic</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- === PRODUCT GRID === -->
+  <main class="content">
+    <h2 class="section-title">All Products</h2>
+    <div id="product-grid" class="product-grid" aria-live="polite"></div>
+  </main>
+
+  <!-- === QUICK VIEW MODAL === -->
+  <div id="quickViewModal" class="quickview-modal" aria-hidden="true">
+    <div class="quickview-content" role="dialog" aria-modal="true">
+      <button class="close-btn" onclick="closeQuickView()" aria-label="Close">&times;</button>
+      <div class="quickview-body">
+        <div class="quickview-image">
+          <img id="qvImage" src="" alt="">
+        </div>
+        <div class="quickview-details">
+          <p id="qvBrand" class="qv-brand">Lilac & Loom</p>
+          <h2 id="qvName"></h2>
+          <p class="qv-rating">⭐ <span id="qvStars">4.5</span></p>
+          <p class="qv-price">₹<span id="qvPrice"></span> <span id="qvOldPrice" class="qv-old"></span></p>
+          <p id="qvDesc" class="qv-desc"></p>
+          <div id="qvExtras" class="qv-actions"></div>
+
+          <div style="display:flex; gap:10px; margin-top:12px;">
+            <button class="add-to-bag" onclick="addToCartFromModal()">Add to Bag</button>
+            <button class="go-checkout" onclick="proceedToCheckout()">Checkout</button>
+          </div>
+
+          <!-- === SIZE CHART INLINE === -->
+          <p style="margin-top:10px; font-size:13px; color:#666;">
+            View size chart:
+            <a href="#" onclick="toggleSizeChart(); return false;">Size Chart</a>
+          </p>
+          <div id="sizeChartInline" class="sizechart-inline">
+            <h4 id="chartTitle">Size Chart</h4>
+            <table id="chartTable"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === CART MODAL === -->
+  <div id="cartModal" class="cart-modal" aria-hidden="true">
+    <div class="cart-modal-content" role="dialog">
+      <button class="close-btn" onclick="closeCart()" aria-label="Close">&times;</button>
+      <h3>Your Bag</h3>
+      <div id="cartItemsContainer"></div>
+      <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+        <button onclick="proceedToCheckout()" class="checkout-btn">Place Order</button>
+        <button onclick="clearCart()" class="clear-cart">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function goHome() { window.location.href = "index.html"; }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (typeof initSite === "function") initSite();
+    });
+
+    // === INLINE SIZE CHART (ALWAYS WORKS) ===
+    function toggleSizeChart() {
+      const box = document.getElementById("sizeChartInline");
+      const title = document.getElementById("chartTitle");
+      const table = document.getElementById("chartTable");
+      const nameEl = document.getElementById("qvName");
+      const name = nameEl?.innerText?.toLowerCase() || "";
+
+      box.classList.toggle("visible");
+
+      if (!box.classList.contains("visible")) return;
+
+      if (name.includes("shoe") || name.includes("sneaker") || name.includes("heel") || name.includes("footwear")) {
+        title.innerText = "Shoe Size Chart";
+        table.innerHTML = `
+          <tr><th>UK</th><th>US</th><th>EU</th><th>Foot Length (cm)</th></tr>
+          <tr><td>5</td><td>6</td><td>39</td><td>24.7</td></tr>
+          <tr><td>6</td><td>7</td><td>40</td><td>25.3</td></tr>
+          <tr><td>7</td><td>8</td><td>41</td><td>26.0</td></tr>
+          <tr><td>8</td><td>9</td><td>42</td><td>26.7</td></tr>
+          <tr><td>9</td><td>10</td><td>43</td><td>27.3</td></tr>
+          <tr><td>10</td><td>11</td><td>44</td><td>28.0</td></tr>`;
+      } else {
+        title.innerText = "Clothing Size Chart";
+        table.innerHTML = `
+          <tr><th>Size</th><th>Chest (in)</th><th>Waist (in)</th><th>Hip (in)</th></tr>
+          <tr><td>XS</td><td>34</td><td>28</td><td>36</td></tr>
+          <tr><td>S</td><td>36</td><td>30</td><td>38</td></tr>
+          <tr><td>M</td><td>38</td><td>32</td><td>40</td></tr>
+          <tr><td>L</td><td>40</td><td>34</td><td>42</td></tr>
+          <tr><td>XL</td><td>42</td><td>36</td><td>44</td></tr>
+          <tr><td>XXL</td><td>44</td><td>38</td><td>46</td></tr>`;
+      }
+    }
+    // === HERO VIDEO SLIDER ===
+document.addEventListener("DOMContentLoaded", () => {
+  const slides = document.querySelectorAll(".hero-video-slider .video-slide");
+  if (!slides.length) return;
+
+  let current = 0;
+
+  // Make sure only the first one is active initially
+  slides.forEach((s, i) => {
+    s.classList.toggle("active", i === 0);
+    const vid = s.querySelector("video");
+    if (i === 0) {
+      vid.play();
+    } else {
+      vid.pause();
+      vid.currentTime = 0;
+    }
+  });
+
+  // Function to change slide
+  function nextSlide() {
+    // Remove current
+    slides[current].classList.remove("active");
+    slides[current].querySelector("video").pause();
+    slides[current].querySelector("video").currentTime = 0;
+
+    // Move to next
+    current = (current + 1) % slides.length;
+
+    // Activate next
+    slides[current].classList.add("active");
+    const vid = slides[current].querySelector("video");
+    vid.currentTime = 0;
+    vid.play();
+  }
+
+  // Automatically change every 6 seconds (adjust as needed)
+  setInterval(nextSlide, 6000);
+});
+
+  </script>
+
+  <style>
+    .sizechart-inline {
+      display: none;
+      margin-top: 10px;
+      padding: 8px;
+      background: #fff8f9;
+      border: 1px solid #e3cad7;
+      border-radius: 10px;
+      animation: slideDown 0.3s ease;
+    }
+    .sizechart-inline.visible {
+      display: block;
+    }
+    .sizechart-inline table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: center;
+    }
+    .sizechart-inline table th {
+      background: #fce7f3;
+      color: #7b3f61;
+    }
+    .sizechart-inline th, .sizechart-inline td {
+      border: 1px solid #eee;
+      padding: 6px;
+    }
+    @keyframes slideDown {
+      from {opacity: 0; transform: translateY(-5px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</body>
+</html>
